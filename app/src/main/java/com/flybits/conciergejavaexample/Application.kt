@@ -23,16 +23,9 @@ class Application : Application() {
             override fun onException(exception: FlybitsException) {
                 println(" on connect onException")
             }
-
             override fun onSuccess() {
                 println(" on connect onSuccess")
-
             }
-
         })
-    }
-
-    companion object {
-        const val CHANNEL_ID = "com.flybits.concierge.channel.id"
     }
 }
