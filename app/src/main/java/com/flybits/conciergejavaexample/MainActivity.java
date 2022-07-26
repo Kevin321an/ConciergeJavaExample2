@@ -6,12 +6,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.flybits.android.push.models.newPush.DisplayablePush;
 import com.flybits.commons.library.api.idps.AnonymousIDP;
 import com.flybits.commons.library.exceptions.FlybitsException;
-import com.flybits.concierge.AuthenticationStatusListener;
-import com.flybits.concierge.ConciergeFragment;
-import com.flybits.concierge.DisplayConfiguration;
-import com.flybits.concierge.FlybitsConcierge;
-import com.flybits.concierge.enums.ShowMode;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
@@ -27,7 +21,6 @@ import androidx.core.app.ActivityCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    FlybitsConcierge concierge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,62 +28,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        concierge = FlybitsConcierge.with(this);
 
         grantPermission(this);
 
         //TODO Configuration
-//        concierge.authenticate(new AnonymousIDP());
-
-        DisplayConfiguration displayConfiguration = new DisplayConfiguration(
-                ConciergeFragment.MenuType.MENU_TYPE_APP_BAR,
-                ShowMode.NEW_ACTIVITY, true
-        );
-
-//        DisplayConfiguration displayConfiguration = new DisplayConfiguration(
-//                ConciergeFragment.MenuType.MENU_TYPE_TAB,
-//                ShowMode.OVERLAY, false
-//        );
-
-        concierge.isAuthenticated();
-        concierge.authenticate(new AnonymousIDP());
-//        FlybitsManager.isConnected(this, true, this);
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO Show the content
-                if (concierge.isAuthenticated()) {
-                    concierge.show(displayConfiguration);
-                    //start the context plugin
-                    ((Application) getApplication()).startPlugins();
-                } else {
-                    concierge.authenticate(new AnonymousIDP());
-                }
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        handleFlybitPushIntent(getIntent());
-
-        concierge.registerAuthenticationStateListener(new AuthenticationStatusListener() {
-            @Override
-            public void onAuthenticated() {
-                Log.e("flybits", "onAuthenticated");
-            }
-
-            @Override
-            public void onAuthenticationStarted() {
-                Log.e("flybits", "onAuthenticationStarted");
-            }
-
-            @Override
-            public void onAuthenticationError(final FlybitsException e) {
-                Log.e("flybits", "onAuthenticationError");
-            }
-        });
 
 
     }
@@ -126,21 +67,4 @@ public class MainActivity extends AppCompatActivity {
 
     final String EXTRA_PUSH_NOTIFICATION = "com.flybits.android.push.services.push_notification";
 
-    @Override
-    protected void onNewIntent(final Intent intent) {
-        super.onNewIntent(intent);
-        handleFlybitPushIntent(intent);
-    }
-
-    private void handleFlybitPushIntent(Intent intent) {
-        if (intent.hasExtra(EXTRA_PUSH_NOTIFICATION)) {
-            DisplayablePush displayablePush = intent.getParcelableExtra(EXTRA_PUSH_NOTIFICATION);
-            DisplayConfiguration displayConfiguration = new DisplayConfiguration(
-                    ConciergeFragment.MenuType.MENU_TYPE_APP_BAR,
-                    ShowMode.NEW_ACTIVITY,
-                    true
-            );
-            concierge.showPush(displayConfiguration, displayablePush);
-        }
-    }
 }
